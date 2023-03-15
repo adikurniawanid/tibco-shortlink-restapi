@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="http://www.tibco.com/schemas/tibco-shortlink-restapi/SharedResources/Schemas/Schema.xsd"
+	 targetNamespace="http://www.tibco.com/schemas/tibco-shortlink-restapi/SharedResources/Schemas/Schema.xsd"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="Users">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="User"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="User">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="id" minOccurs="0"/>
+				<xs:element ref="username"/>
+				<xs:element ref="password"/>
+				<xs:element ref="createdAt"/>
+				<xs:element ref="updatedAt"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="id" type="xs:int"/>
+	<xs:element name="username" type="xs:string"/>
+	<xs:element name="password" type="xs:string"/>
+	<xs:element name="createdAt" type="xs:dateTime"/>
+	<xs:element name="updatedAt" type="xs:dateTime"/>
+	<xs:simpleType name="int">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+</xs:schema>

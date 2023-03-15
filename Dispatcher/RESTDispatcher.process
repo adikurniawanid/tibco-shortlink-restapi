@@ -63,7 +63,7 @@
                                 <ns0:doc/>
                                 <ns0:method id="Create" name="POST">
                                     <ns0:doc/>
-                                    <Binding process="/Processes/CreateShortLinkImpl.process">
+                                    <Binding process="/Processes/ShortLink/CreateShortLinkImpl.process">
                                         <RESTResponseHeader>
                                             <xsd:element name="Headers">
                                                 <xsd:complexType>
@@ -104,7 +104,7 @@
                                 </ns0:method>
                                 <ns0:method id="Get" name="GET">
                                     <ns0:doc/>
-                                    <Binding process="/Processes/GetShortLinkImpl.process">
+                                    <Binding process="/Processes/ShortLink/GetShortLinkImpl.process">
                                         <RESTResponseHeader>
                                             <xsd:element name="Headers">
                                                 <xsd:complexType>
@@ -148,7 +148,7 @@
                                 </ns0:method>
                                 <ns0:method id="Update" name="PUT">
                                     <ns0:doc/>
-                                    <Binding process="/Processes/UpdateShortLinkImpl.process">
+                                    <Binding process="/Processes/ShortLink/UpdateShortLinkImpl.process">
                                         <RESTResponseHeader>
                                             <xsd:element name="Headers">
                                                 <xsd:complexType>
@@ -185,9 +185,9 @@
                                         </Input-Binding>
                                     </Binding>
                                 </ns0:method>
-                                <ns0:method id="HardDelete" name="DELETE">
+                                <ns0:method id="Hard Delete" name="DELETE">
                                     <ns0:doc/>
-                                    <Binding process="/Processes/HardDeleteImpl.process">
+                                    <Binding process="/Processes/ShortLink/HardDeleteImpl.process">
                                         <RESTResponseHeader>
                                             <xsd:element name="Headers">
                                                 <xsd:complexType>
@@ -226,9 +226,9 @@
                                         </Output-Binding>
                                     </Binding>
                                 </ns0:method>
-                                <ns0:method id="Method7" name="GET">
+                                <ns0:method id="List ShortLink" name="GET">
                                     <ns0:doc/>
-                                    <Binding process="/Processes/ListShortLinkImpl.process">
+                                    <Binding process="/Processes/ShortLink/ListShortLinkImpl.process">
                                         <RESTResponseHeader>
                                             <xsd:element name="Headers">
                                                 <xsd:complexType>
@@ -265,7 +265,7 @@
                                 <ns0:doc/>
                                 <ns0:method id="listlink" name="GET">
                                     <ns0:doc/>
-                                    <Binding process="/Processes/ListShortLinkImpl.process">
+                                    <Binding process="/Processes/ShortLink/ListShortLinkImpl.process">
                                         <RESTResponseHeader>
                                             <xsd:element name="Headers">
                                                 <xsd:complexType>
@@ -302,7 +302,7 @@
                                 <ns0:doc/>
                                 <ns0:method id="redirect user link" name="GET">
                                     <ns0:doc/>
-                                    <Binding process="/Processes/RedirectImpl.process">
+                                    <Binding process="/Processes/ShortLink/RedirectImpl.process">
                                         <RESTResponseHeader>
                                             <xsd:element name="Headers">
                                                 <xsd:complexType>
@@ -347,7 +347,7 @@
                                 <ns0:doc/>
                                 <ns0:method id="cobaImport" name="GET">
                                     <ns0:doc/>
-                                    <Binding process="/Processes/ImportCSVImpl.process">
+                                    <Binding process="/Processes/ShortLink/ImportCSVImpl.process">
                                         <RESTResponseHeader>
                                             <xsd:element name="Headers">
                                                 <xsd:complexType>
@@ -387,6 +387,50 @@
                                     </Binding>
                                 </ns0:method>
                                 <ns0:param name="fileNameCSV" style="query" required="false"/>
+                            </ns0:resource>
+                            <ns0:resource id="user" path="user">
+                                <ns0:doc/>
+                                <ns0:method id="register" name="POST">
+                                    <ns0:doc/>
+                                    <Binding process="/Processes/User/RegisterImpl.process">
+                                        <RESTResponseHeader>
+                                            <xsd:element name="Headers">
+                                                <xsd:complexType>
+                                                    <xsd:sequence>
+                                                        <xsd:element name="StatusLine" type="xsd:string" minOccurs="0"/>
+                                                        <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                                                        <xsd:element name="Location" type="xsd:string" minOccurs="0"/>
+                                                        <xsd:element name="Set-Cookie" type="xsd:string" minOccurs="0"/>
+                                                        <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
+                                                    </xsd:sequence>
+                                                </xsd:complexType>
+                                            </xsd:element>
+                                        </RESTResponseHeader>
+                                        <Input-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                                            <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsd="http://www.w3.org/2001/XMLSchema" match="/*">
+                                                <PostData>
+                                                    <xsl:value-of select="$HTTP-Receiver/ProcessStarterOutput/PostData"/>
+                                                </PostData>
+                                            </xsl:template>
+                                        </Input-Binding>
+                                        <Output-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-restapi/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                                            <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-restapi/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" match="/*">
+                                                <RESTResponse>
+                                                    <xsl:if test="$End/ResponseData">
+                                                        <asciiContent>
+                                                            <xsl:value-of select="$End/ResponseData"/>
+                                                        </asciiContent>
+                                                    </xsl:if>
+                                                    <Headers>
+                                                        <Content-Type>
+                                                            <xsl:value-of select="&quot;application/json&quot;"/>
+                                                        </Content-Type>
+                                                    </Headers>
+                                                </RESTResponse>
+                                            </xsl:template>
+                                        </Output-Binding>
+                                    </Binding>
+                                </ns0:method>
                             </ns0:resource>
                         </ns0:resources>
                     </ns0:application>
