@@ -185,7 +185,7 @@ VALUES (DEFAULT, ?,?,?)</statement>
             <ns:ActivityInputClass>
                 <ResponseData>
                     <message>
-                        <xsl:value-of select="if($is-Custom-Link-Exists/resultSet/Record/customLink) then &quot;Custom link already exists, please use another custom link&quot;  else $CatchSQLExceptions/ns1:JDBCSQLException/msg"/>
+                        <xsl:value-of select="if($is-Custom-Link-Exists/resultSet/Record/customLink) then concat(&quot;Custom link &quot;, $is-Custom-Link-Exists/resultSet/Record/customLink  ,&quot; already exists, please use another custom link&quot;)  else $CatchSQLExceptions/ns1:JDBCSQLException/msg"/>
                     </message>
                 </ResponseData>
             </ns:ActivityInputClass>
@@ -199,12 +199,13 @@ VALUES (DEFAULT, ?,?,?)</statement>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
-            <maxRows>100</maxRows>
+            <maxRows>1</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResources/Connections/JDBC Connection.sharedjdbc</jdbcSharedConfig>
             <statement>SELECT "customLink"
 FROM public."ShortLinks"
-WHERE "customLink" = ?</statement>
+WHERE "customLink" = ?
+LIMIT 1</statement>
             <Prepared_Param_DataType>
                 <parameter>
                     <parameterName>customLink</parameterName>
@@ -361,7 +362,7 @@ public class CreateShortLinkImplshortLinkGenerator{
     <pd:transition>
         <pd:from>is Custom Link Exists</pd:from>
         <pd:to>Group</pd:to>
-        <pd:xpathDescription>True</pd:xpathDescription>
+        <pd:xpathDescription>False</pd:xpathDescription>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>xpath</pd:conditionType>

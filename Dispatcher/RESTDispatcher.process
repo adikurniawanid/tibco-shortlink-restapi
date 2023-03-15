@@ -306,51 +306,6 @@
                                     </ns0:method>
                                 </ns0:resource>
                             </ns0:resource>
-                            <ns0:resource id="redirect" path="to/{userLink}">
-                                <ns0:doc/>
-                                <ns0:method id="redirect user link" name="GET">
-                                    <ns0:doc/>
-                                    <Binding process="/Processes/ShortLink/RedirectImpl.process">
-                                        <RESTResponseHeader>
-                                            <xsd:element name="Headers">
-                                                <xsd:complexType>
-                                                    <xsd:sequence>
-                                                        <xsd:element name="StatusLine" type="xsd:string" minOccurs="0"/>
-                                                        <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
-                                                        <xsd:element name="Location" type="xsd:string" minOccurs="0"/>
-                                                        <xsd:element name="Set-Cookie" type="xsd:string" minOccurs="0"/>
-                                                        <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
-                                                    </xsd:sequence>
-                                                </xsd:complexType>
-                                            </xsd:element>
-                                        </RESTResponseHeader>
-                                        <Input-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-                                            <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsd="http://www.w3.org/2001/XMLSchema" match="/*">
-                                                <userLink>
-                                                    <xsl:value-of select="$Input-Binding/params/template/userLink"/>
-                                                </userLink>
-                                            </xsl:template>
-                                        </Input-Binding>
-                                        <Output-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-                                            <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-                                                <RESTResponse>
-                                                    <xsl:if test="$End/ResponseData">
-                                                        <asciiContent>
-                                                            <xsl:value-of select="$End/ResponseData"/>
-                                                        </asciiContent>
-                                                    </xsl:if>
-                                                    <Headers>
-                                                        <Content-Type>
-                                                            <xsl:value-of select="&quot;application/json&quot;"/>
-                                                        </Content-Type>
-                                                    </Headers>
-                                                </RESTResponse>
-                                            </xsl:template>
-                                        </Output-Binding>
-                                    </Binding>
-                                </ns0:method>
-                                <ns0:param name="userLink" style="template" required="true"/>
-                            </ns0:resource>
                             <ns0:resource id="user" path="user">
                                 <ns0:doc/>
                                 <ns0:method id="register" name="POST">
@@ -394,6 +349,51 @@
                                         </Output-Binding>
                                     </Binding>
                                 </ns0:method>
+                            </ns0:resource>
+                            <ns0:resource id="redirect" path="{userLink}">
+                                <ns0:doc/>
+                                <ns0:method id="to" name="GET">
+                                    <ns0:doc/>
+                                    <Binding process="/Processes/ShortLink/RedirectImpl.process">
+                                        <RESTResponseHeader>
+                                            <xsd:element name="Headers">
+                                                <xsd:complexType>
+                                                    <xsd:sequence>
+                                                        <xsd:element name="StatusLine" type="xsd:string" minOccurs="0"/>
+                                                        <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                                                        <xsd:element name="Location" type="xsd:string" minOccurs="0"/>
+                                                        <xsd:element name="Set-Cookie" type="xsd:string" minOccurs="0"/>
+                                                        <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
+                                                    </xsd:sequence>
+                                                </xsd:complexType>
+                                            </xsd:element>
+                                        </RESTResponseHeader>
+                                        <Input-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                                            <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsd="http://www.w3.org/2001/XMLSchema" match="/*">
+                                                <userLink>
+                                                    <xsl:value-of select="$Input-Binding/params/template/userLink"/>
+                                                </userLink>
+                                            </xsl:template>
+                                        </Input-Binding>
+                                        <Output-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                            <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" match="/*">
+                                                <RESTResponse>
+                                                    <xsl:if test="$End/ResponseData">
+                                                        <asciiContent>
+                                                            <xsl:value-of select="$End/ResponseData"/>
+                                                        </asciiContent>
+                                                    </xsl:if>
+                                                    <Headers>
+                                                        <Content-Type>
+                                                            <xsl:value-of select="&quot;application/json&quot;"/>
+                                                        </Content-Type>
+                                                    </Headers>
+                                                </RESTResponse>
+                                            </xsl:template>
+                                        </Output-Binding>
+                                    </Binding>
+                                </ns0:method>
+                                <ns0:param name="userLink" style="template" required="true"/>
                             </ns0:resource>
                         </ns0:resources>
                     </ns0:application>
