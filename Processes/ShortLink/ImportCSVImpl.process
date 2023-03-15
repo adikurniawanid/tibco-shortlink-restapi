@@ -4,7 +4,7 @@
     <pd:name>Processes/ShortLink/ImportCSVImpl.process</pd:name>
     <pd:startName>Start</pd:startName>
     <pd:startType>
-        <xsd:element name="fileNameCSV" type="xsd:string"/>
+        <xsd:element name="PostData" type="xsd:string"/>
     </pd:startType>
     <pd:startX>27</pd:startX>
     <pd:startY>141</pd:startY>
@@ -127,7 +127,7 @@
         <pd:inputBindings>
             <Input>
                 <fileName>
-                    <xsl:value-of select="concat(&quot;C:\Users\MIG12845\Documents\GitHub\tibco-shortlink-restapi\data\&quot;, $Start/fileNameCSV,&quot;.csv&quot;)"/>
+                    <xsl:value-of select="concat(&quot;C:\Users\MIG12845\Documents\GitHub\tibco-shortlink-restapi\data\&quot;, $Parse-JSON/ns:ActivityOutputClass/fileNameCSV,&quot;.csv&quot;)"/>
                 </fileName>
                 <noOfRecords>
                     <xsl:value-of select="4"/>
@@ -138,13 +138,26 @@
             </Input>
         </pd:inputBindings>
     </pd:activity>
-    <pd:transition>
-        <pd:from>Start</pd:from>
-        <pd:to>Parse Data</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
+    <pd:activity name="Parse JSON">
+        <pd:type>com.tibco.plugin.json.activities.JSONParserActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONParserActivity</pd:resourceType>
+        <pd:x>96</pd:x>
+        <pd:y>302</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <ActivityOutputEditor>
+                <xsd:element name="fileNameCSV" type="xsd:string"/>
+            </ActivityOutputEditor>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInputClass>
+                <jsonString>
+                    <xsl:value-of select="$Start/PostData"/>
+                </jsonString>
+            </ns:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
     <pd:transition>
         <pd:from>Group</pd:from>
         <pd:to>End</pd:to>
@@ -155,6 +168,20 @@
     <pd:transition>
         <pd:from>Parse Data</pd:from>
         <pd:to>Group</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Parse JSON</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Parse JSON</pd:from>
+        <pd:to>Parse Data</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>

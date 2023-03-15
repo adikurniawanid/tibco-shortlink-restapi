@@ -30,7 +30,7 @@
         <config>
             <SchemaType>xsdType</SchemaType>
             <BadgerfishCheck>false</BadgerfishCheck>
-            <ValidateIntputEnable>true</ValidateIntputEnable>
+            <ValidateIntputEnable>false</ValidateIntputEnable>
             <removeRootElementForInput>true</removeRootElementForInput>
             <ActivityInputEditor>
                 <xsd:element name="ResponseData">
@@ -40,7 +40,12 @@
                             <xsd:element name="data">
                                 <xsd:complexType>
                                     <xsd:sequence>
-                                        <xsd:element ref="pfx:ShortLink"/>
+                                        <xsd:element name="shortLink" type="xsd:string"/>
+                                        <xsd:element name="originalLink" type="xsd:string"/>
+                                        <xsd:element name="customLink" type="xsd:string"/>
+                                        <xsd:element name="totalClicks" type="xsd:int"/>
+                                        <xsd:element name="createdAt" type="xsd:time"/>
+                                        <xsd:element name="updatedAt" type="xsd:time"/>
                                     </xsd:sequence>
                                 </xsd:complexType>
                             </xsd:element>
@@ -56,31 +61,24 @@
                         <xsl:value-of select="&quot;ShortLink successfully fetched&quot;"/>
                     </message>
                     <data>
-                        <pfx:ShortLink>
-                            <xsl:if test="$Get-ShortLink/resultSet/Record[1]/id">
-                                <pfx:id>
-                                    <xsl:value-of select="$Get-ShortLink/resultSet/Record[1]/id"/>
-                                </pfx:id>
-                            </xsl:if>
-                            <pfx:originalLink>
-                                <xsl:value-of select="$Get-ShortLink/resultSet/Record[1]/originalLink"/>
-                            </pfx:originalLink>
-                            <xsl:if test="$Get-ShortLink/resultSet/Record[1]/shortLink">
-                                <pfx:shortLink>
-                                    <xsl:value-of select="$Get-ShortLink/resultSet/Record[1]/shortLink"/>
-                                </pfx:shortLink>
-                            </xsl:if>
-                            <xsl:if test="$Get-ShortLink/resultSet/Record[1]/customLink">
-                                <pfx:customLink>
-                                    <xsl:value-of select="$Get-ShortLink/resultSet/Record[1]/customLink"/>
-                                </pfx:customLink>
-                            </xsl:if>
-                            <xsl:if test="$Get-ShortLink/resultSet/Record[1]/totalClicks">
-                                <pfx:totalClicks>
-                                    <xsl:value-of select="$Get-ShortLink/resultSet/Record[1]/totalClicks"/>
-                                </pfx:totalClicks>
-                            </xsl:if>
-                        </pfx:ShortLink>
+                        <shortLink>
+                            <xsl:value-of select="$Get-ShortLink/resultSet/Record[1]/shortLink"/>
+                        </shortLink>
+                        <originalLink>
+                            <xsl:value-of select="$Get-ShortLink/resultSet/Record[1]/originalLink"/>
+                        </originalLink>
+                        <customLink>
+                            <xsl:value-of select="$Get-ShortLink/resultSet/Record[1]/customLink"/>
+                        </customLink>
+                        <totalClicks>
+                            <xsl:value-of select="$Get-ShortLink/resultSet/Record[1]/totalClicks"/>
+                        </totalClicks>
+                        <createdAt>
+                            <xsl:value-of select="$Get-ShortLink/resultSet/Record[1]/createdAt"/>
+                        </createdAt>
+                        <updatedAt>
+                            <xsl:value-of select="$Get-ShortLink/resultSet/Record[1]/updatedAt"/>
+                        </updatedAt>
                     </data>
                 </ResponseData>
             </ns:ActivityInputClass>
@@ -126,7 +124,7 @@
             <maxRows>0</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
             <jdbcSharedConfig>/SharedResources/Connections/JDBC Connection.sharedjdbc</jdbcSharedConfig>
-            <statement>SELECT  "id", "originalLink", "shortLink", "customLink", "totalClicks"
+            <statement>SELECT  "originalLink", "shortLink", "customLink", "totalClicks", "createdAt", "updatedAt"
 FROM public."ShortLinks"
 WHERE "shortLink" = ?</statement>
             <Prepared_Param_DataType>
@@ -137,10 +135,6 @@ WHERE "shortLink" = ?</statement>
             </Prepared_Param_DataType>
             <oraObjects/>
             <oraTables/>
-            <QueryOutputCachedSchemaColumns>id</QueryOutputCachedSchemaColumns>
-            <QueryOutputCachedSchemaDataTypes>4</QueryOutputCachedSchemaDataTypes>
-            <QueryOutputCachedSchemaDataTypesName>serial</QueryOutputCachedSchemaDataTypesName>
-            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
             <QueryOutputCachedSchemaColumns>originalLink</QueryOutputCachedSchemaColumns>
             <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
             <QueryOutputCachedSchemaDataTypesName>varchar</QueryOutputCachedSchemaDataTypesName>
@@ -157,6 +151,14 @@ WHERE "shortLink" = ?</statement>
             <QueryOutputCachedSchemaDataTypes>4</QueryOutputCachedSchemaDataTypes>
             <QueryOutputCachedSchemaDataTypesName>int4</QueryOutputCachedSchemaDataTypesName>
             <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>createdAt</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>timestamp</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+            <QueryOutputCachedSchemaColumns>updatedAt</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>93</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>timestamp</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
         </config>
         <pd:inputBindings>
             <jdbcQueryActivityInput>
@@ -180,7 +182,7 @@ WHERE "shortLink" = ?</statement>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>xpath</pd:conditionType>
-        <pd:xpath>exists($Get-ShortLink/resultSet/Record/id)</pd:xpath>
+        <pd:xpath>exists($Get-ShortLink/resultSet/Record/shortLink)</pd:xpath>
     </pd:transition>
     <pd:transition>
         <pd:from>200 Success</pd:from>
@@ -196,7 +198,7 @@ WHERE "shortLink" = ?</statement>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>xpath</pd:conditionType>
-        <pd:xpath>empty($Get-ShortLink/resultSet/Record/id)</pd:xpath>
+        <pd:xpath>empty($Get-ShortLink/resultSet/Record/shortLink)</pd:xpath>
     </pd:transition>
     <pd:transition>
         <pd:from>404 Not Found</pd:from>

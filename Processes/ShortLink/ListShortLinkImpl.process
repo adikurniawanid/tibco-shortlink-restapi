@@ -7,7 +7,7 @@
     <pd:startY>104</pd:startY>
     <pd:returnBindings>
         <ResponseData>
-            <xsl:value-of select="if ($Render-JSON/ns:ActivityOutputClass/jsonString) then $Render-JSON/ns:ActivityOutputClass/jsonString else $Not-Found/ns:ActivityOutputClass/jsonString"/>
+            <xsl:value-of select="if ($Success/ns:ActivityOutputClass/jsonString) then $Success/ns:ActivityOutputClass/jsonString else $Not-Found/ns:ActivityOutputClass/jsonString"/>
         </ResponseData>
     </pd:returnBindings>
     <pd:endName>End</pd:endName>
@@ -15,7 +15,7 @@
         <xsd:element name="ResponseData" type="xsd:string"/>
     </pd:endType>
     <pd:endX>648</pd:endX>
-    <pd:endY>104</pd:endY>
+    <pd:endY>112</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables/>
     <pd:targetNamespace>http://xmlns.example.com/1678682690385</pd:targetNamespace>
@@ -59,15 +59,11 @@
             <commit>false</commit>
             <maxRows>100</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
-            <statement>SELECT  "id", "originalLink", "shortLink", "customLink", "totalClicks"
+            <statement>SELECT  "originalLink", "shortLink", "customLink", "totalClicks"
 FROM public."ShortLinks"</statement>
             <jdbcSharedConfig>/SharedResources/Connections/JDBC Connection.sharedjdbc</jdbcSharedConfig>
             <oraObjects/>
             <oraTables/>
-            <QueryOutputCachedSchemaColumns>id</QueryOutputCachedSchemaColumns>
-            <QueryOutputCachedSchemaDataTypes>4</QueryOutputCachedSchemaDataTypes>
-            <QueryOutputCachedSchemaDataTypesName>serial</QueryOutputCachedSchemaDataTypesName>
-            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
             <QueryOutputCachedSchemaColumns>originalLink</QueryOutputCachedSchemaColumns>
             <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
             <QueryOutputCachedSchemaDataTypesName>varchar</QueryOutputCachedSchemaDataTypesName>
@@ -89,11 +85,11 @@ FROM public."ShortLinks"</statement>
             <jdbcQueryActivityInput/>
         </pd:inputBindings>
     </pd:activity>
-    <pd:activity name="Render JSON">
+    <pd:activity name="schemaBased">
         <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
         <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
-        <pd:x>473</pd:x>
-        <pd:y>104</pd:y>
+        <pd:x>482</pd:x>
+        <pd:y>292</pd:y>
         <config>
             <SchemaType>xsdType</SchemaType>
             <BadgerfishCheck>false</BadgerfishCheck>
@@ -151,21 +147,68 @@ FROM public."ShortLinks"</statement>
             </ns:ActivityInputClass>
         </pd:inputBindings>
     </pd:activity>
+    <pd:activity name="200 Success">
+        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
+        <pd:x>484</pd:x>
+        <pd:y>108</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <removeRootElementForInput>true</removeRootElementForInput>
+            <ValidateIntputEnable>false</ValidateIntputEnable>
+            <ActivityInputEditor>
+                <xsd:element name="ResponseData">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="message" type="xsd:string"/>
+                            <xsd:element name="data">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="shortLink" type="xsd:string"/>
+                                        <xsd:element name="originalLink" type="xsd:string"/>
+                                        <xsd:element name="customLink" type="xsd:string"/>
+                                        <xsd:element name="totalClick" type="xsd:int"/>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </ActivityInputEditor>
+        </config>
+        <pd:inputBindings>
+            <ns1:ActivityInputClass xmlns:ns1="http://www.tibco.com/namespaces/tnt/plugins/json">
+                <ResponseData>
+                    <message>
+                        <xsl:value-of select="&quot;Shortlink list fetched successfully&quot;"/>
+                    </message>
+                    <xsl:for-each select="$List-Short-Link/resultSet/Record">
+                        <data>
+                            <shortLink>
+                                <xsl:value-of select="shortLink"/>
+                            </shortLink>
+                            <originalLink>
+                                <xsl:value-of select="originalLink"/>
+                            </originalLink>
+                            <customLink>
+                                <xsl:value-of select="customLink"/>
+                            </customLink>
+                            <totalClick>
+                                <xsl:value-of select="totalClicks"/>
+                            </totalClick>
+                        </data>
+                    </xsl:for-each>
+                </ResponseData>
+            </ns1:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
     <pd:transition>
         <pd:from>Start</pd:from>
         <pd:to>List Short Link</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
-        <pd:from>List Short Link</pd:from>
-        <pd:to>Render JSON</pd:to>
-        <pd:xpathDescription>200 Success</pd:xpathDescription>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>xpath</pd:conditionType>
-        <pd:xpath>exists($List-Short-Link/resultSet/Record)</pd:xpath>
     </pd:transition>
     <pd:transition>
         <pd:from>List Short Link</pd:from>
@@ -184,7 +227,16 @@ FROM public."ShortLinks"</statement>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>Render JSON</pd:from>
+        <pd:from>List Short Link</pd:from>
+        <pd:to>200 Success</pd:to>
+        <pd:xpathDescription>Success</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>exists($List-Short-Link/resultSet/Record)</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>200 Success</pd:from>
         <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>

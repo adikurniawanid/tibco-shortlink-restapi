@@ -113,8 +113,8 @@ WHERE "username" = ?</statement>
     <pd:activity name="400 Bad Request">
         <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
         <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
-        <pd:x>564</pd:x>
-        <pd:y>160</pd:y>
+        <pd:x>563</pd:x>
+        <pd:y>227</pd:y>
         <config>
             <SchemaType>xsdType</SchemaType>
             <BadgerfishCheck>false</BadgerfishCheck>
