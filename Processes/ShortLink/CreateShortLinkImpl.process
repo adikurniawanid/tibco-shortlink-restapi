@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:pfx2="http://www.tibco.com/pe/EngineTypes" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://schemas.tibco.com/bw/plugins/jdbc/5.0/jdbcExceptions" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <xsd:import namespace="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" schemaLocation="/SharedResources/Schemas/ShortlinkSchema.xsd"/>
-    <pd:name>Processes/CreateShortLinkImpl.process</pd:name>
+    <pd:name>Processes/ShortLink/CreateShortLinkImpl.process</pd:name>
     <pd:startName>Start</pd:startName>
     <pd:startType>
         <xsd:element name="PostData" type="xsd:string"/>
@@ -37,9 +37,9 @@
         <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
         <pd:resourceType>ae.process.group</pd:resourceType>
         <pd:x>376</pd:x>
-        <pd:y>129</pd:y>
+        <pd:y>201</pd:y>
         <pd:width>179</pd:width>
-        <pd:height>287</pd:height>
+        <pd:height>216</pd:height>
         <pd:collapsedWidth>57</pd:collapsedWidth>
         <pd:collapsedHeight>70</pd:collapsedHeight>
         <pd:groupVariables/>

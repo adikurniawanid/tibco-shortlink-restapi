@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <xsd:import namespace="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" schemaLocation="/SharedResources/Schemas/ShortlinkSchema.xsd"/>
-    <pd:name>Processes/HardDeleteImpl.process</pd:name>
+    <pd:name>Processes/ShortLink/HardDeleteImpl.process</pd:name>
     <pd:startName>Start</pd:startName>
     <pd:startType ref="pfx:shortLink"/>
     <pd:startX>27</pd:startX>
