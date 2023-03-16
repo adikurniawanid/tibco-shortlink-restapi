@@ -13,6 +13,9 @@
 				<xs:element ref="shortLink" minOccurs="0"/>
 				<xs:element ref="customLink" minOccurs="0"/>
 				<xs:element ref="totalClicks" minOccurs="0"/>
+				<xs:element ref="createdAt" minOccurs="0"/>
+				<xs:element ref="updatedAt" minOccurs="0"/>
+				<xs:element ref="deletedAt" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -28,4 +31,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="createdAt" type="xs:dateTime"/>
+	<xs:element name="updatedAt" type="xs:dateTime"/>
+	<xs:element name="deletedAt" type="xs:dateTime"/>
 </xs:schema>

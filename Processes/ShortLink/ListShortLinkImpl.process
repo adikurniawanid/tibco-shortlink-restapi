@@ -60,7 +60,8 @@
             <maxRows>100</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
             <statement>SELECT  "originalLink", "shortLink", "customLink", "totalClicks"
-FROM public."ShortLinks"</statement>
+FROM public."ShortLinks"
+WHERE "deletedAt" IS NULL</statement>
             <jdbcSharedConfig>/SharedResources/Connections/JDBC Connection.sharedjdbc</jdbcSharedConfig>
             <oraObjects/>
             <oraTables/>

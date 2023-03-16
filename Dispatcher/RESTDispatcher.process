@@ -185,9 +185,9 @@
                                     </ns0:method>
                                     <ns0:doc/>
                                     <ns0:param name="shortLink" style="template" required="true"/>
-                                    <ns0:method id="Hard Delete" name="DELETE">
+                                    <ns0:method id="Delete" name="DELETE">
                                         <ns0:doc/>
-                                        <Binding process="/Processes/ShortLink/HardDeleteImpl.process">
+                                        <Binding process="/Processes/ShortLink/DeleteShortLinkImpl.process">
                                             <RESTResponseHeader>
                                                 <xsd:element name="Headers">
                                                     <xsd:complexType>

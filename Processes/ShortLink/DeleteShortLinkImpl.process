@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <xsd:import namespace="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" schemaLocation="/SharedResources/Schemas/ShortlinkSchema.xsd"/>
-    <pd:name>Processes/ShortLink/HardDeleteImpl.process</pd:name>
+    <pd:name>Processes/ShortLink/DeleteShortLinkImpl.process</pd:name>
     <pd:startName>Start</pd:startName>
     <pd:startType ref="pfx:shortLink"/>
     <pd:startX>27</pd:startX>
@@ -52,8 +52,8 @@
     <pd:activity name="404 Not Found">
         <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
         <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
-        <pd:x>479</pd:x>
-        <pd:y>132</pd:y>
+        <pd:x>489</pd:x>
+        <pd:y>237</pd:y>
         <config>
             <SchemaType>xsdType</SchemaType>
             <BadgerfishCheck>false</BadgerfishCheck>
@@ -113,16 +113,51 @@ WHERE "shortLink" = ?</statement>
             </jdbcQueryActivityInput>
         </pd:inputBindings>
     </pd:activity>
-    <pd:activity name="Delete ShortLink">
+    <pd:activity name="Hard Delete ShortLink">
         <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-        <pd:x>302</pd:x>
-        <pd:y>35</pd:y>
+        <pd:x>340</pd:x>
+        <pd:y>248</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
             <emptyStrAsNil>false</emptyStrAsNil>
             <statement>DELETE FROM public."ShortLinks" 
+WHERE id = ?</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>id</parameterName>
+                    <dataType>INTEGER</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <jdbcSharedConfig>/SharedResources/Connections/JDBC Connection.sharedjdbc</jdbcSharedConfig>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <id>
+                    <xsl:choose>
+                        <xsl:when test="exists($is-ShortLink-Exists/resultSet/Record[1]/id)">
+                            <xsl:value-of select="$is-ShortLink-Exists/resultSet/Record[1]/id"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </id>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Soft Delete ShortLink">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>351</pd:x>
+        <pd:y>43</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>UPDATE  public."ShortLinks" 
+SET "deletedAt" = now()
 WHERE id = ?</statement>
             <Prepared_Param_DataType>
                 <parameter>
@@ -163,19 +198,12 @@ WHERE id = ?</statement>
     </pd:transition>
     <pd:transition>
         <pd:from>is ShortLink Exists</pd:from>
-        <pd:to>Delete ShortLink</pd:to>
+        <pd:to>Soft Delete ShortLink</pd:to>
         <pd:xpathDescription>True</pd:xpathDescription>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>xpath</pd:conditionType>
         <pd:xpath>exists($is-ShortLink-Exists/resultSet/Record/id)</pd:xpath>
-    </pd:transition>
-    <pd:transition>
-        <pd:from>Delete ShortLink</pd:from>
-        <pd:to>200 Success</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
         <pd:from>Start</pd:from>
@@ -192,5 +220,12 @@ WHERE id = ?</statement>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>xpath</pd:conditionType>
         <pd:xpath>empty($is-ShortLink-Exists/resultSet/Record/id)</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Soft Delete ShortLink</pd:from>
+        <pd:to>200 Success</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
     </pd:transition>
 </pd:ProcessDefinition>
