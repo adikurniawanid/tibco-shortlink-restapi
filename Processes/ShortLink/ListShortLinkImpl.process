@@ -90,7 +90,7 @@ WHERE "deletedAt" IS NULL</statement>
         <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
         <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
         <pd:x>482</pd:x>
-        <pd:y>292</pd:y>
+        <pd:y>388</pd:y>
         <config>
             <SchemaType>xsdType</SchemaType>
             <BadgerfishCheck>false</BadgerfishCheck>

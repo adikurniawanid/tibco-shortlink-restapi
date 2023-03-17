@@ -98,7 +98,8 @@
             <jdbcSharedConfig>/SharedResources/Connections/JDBC Connection.sharedjdbc</jdbcSharedConfig>
             <statement>SELECT "id", "originalLink"
 FROM public."ShortLinks"
-WHERE "shortLink" = ? OR "customLink" = ?</statement>
+WHERE ("shortLink" = ? OR "customLink" = ?)
+AND "deletedAt" IS NULL</statement>
             <Prepared_Param_DataType>
                 <parameter>
                     <parameterName>shortLink</parameterName>

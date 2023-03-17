@@ -90,7 +90,8 @@
             <emptyStrAsNil>false</emptyStrAsNil>
             <statement>SELECT id 
 FROM public."ShortLinks"
-WHERE "shortLink" = ?</statement>
+WHERE "shortLink" = ?
+AND "deletedAt" IS NULL</statement>
             <jdbcSharedConfig>/SharedResources/Connections/JDBC Connection.sharedjdbc</jdbcSharedConfig>
             <oraObjects/>
             <oraTables/>

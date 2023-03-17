@@ -18,8 +18,9 @@
 				<xs:element ref="id" minOccurs="0"/>
 				<xs:element ref="username"/>
 				<xs:element ref="password"/>
-				<xs:element ref="createdAt"/>
-				<xs:element ref="updatedAt"/>
+				<xs:element ref="createdAt" minOccurs="0"/>
+				<xs:element ref="updatedAt" minOccurs="0"/>
+				<xs:element ref="deletedAt" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -31,4 +32,5 @@
 	<xs:simpleType name="int">
 		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
+	<xs:element name="deletedAt" type="xs:dateTime"/>
 </xs:schema>

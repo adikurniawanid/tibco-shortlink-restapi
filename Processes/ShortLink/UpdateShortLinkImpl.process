@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:ns1="http://schemas.tibco.com/bw/plugins/xml/5.0/RESTJSONExceptions" xmlns:ns4="http://www.tibco.com/pe/EngineTypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns3="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema">
     <xsd:import namespace="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" schemaLocation="/SharedResources/Schemas/ShortlinkSchema.xsd"/>
     <pd:name>Processes/ShortLink/UpdateShortLinkImpl.process</pd:name>
     <pd:startName>Start</pd:startName>
@@ -7,31 +7,61 @@
         <xsd:element name="PutData" type="xsd:string"/>
     </pd:startType>
     <pd:startX>27</pd:startX>
-    <pd:startY>45</pd:startY>
+    <pd:startY>43</pd:startY>
     <pd:returnBindings>
         <ResponseData>
-            <xsl:value-of select="if ($Success/ns:ActivityOutputClass/jsonString) then $Success/ns:ActivityOutputClass/jsonString else $Not-Found/ns:ActivityOutputClass/jsonString"/>
+            <xsl:value-of select="if ($Success-Response/ns:ActivityOutputClass/jsonString) then $Success-Response/ns:ActivityOutputClass/jsonString else $Error-Response/ns:ActivityOutputClass/jsonString"/>
         </ResponseData>
     </pd:returnBindings>
     <pd:endName>End</pd:endName>
     <pd:endType>
         <xsd:element name="ResponseData" type="xsd:string"/>
     </pd:endType>
-    <pd:endX>703</pd:endX>
-    <pd:endY>45</pd:endY>
+    <pd:endX>620</pd:endX>
+    <pd:endY>284</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables/>
     <pd:targetNamespace>http://xmlns.example.com/1678775914913</pd:targetNamespace>
-    <pd:activity name="200 Success">
+    <pd:activity name="CatchAll">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>362</pd:x>
+        <pd:y>284</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <fault>localname=ValidationException namespace=http://schemas.tibco.com/bw/plugins/xml/5.0/RESTJSONExceptions</fault>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Custom Link Already Exists">
+        <pd:type>com.tibco.pe.core.GenerateErrorActivity</pd:type>
+        <pd:resourceType>ae.activities.throw</pd:resourceType>
+        <pd:x>362</pd:x>
+        <pd:y>174</pd:y>
+        <config>
+            <faultName/>
+        </config>
+        <pd:inputBindings>
+            <ns3:ActivityInput>
+                <message>
+                    <xsl:value-of select="&quot;Custom link already exists, please use another custom link&quot;"/>
+                </message>
+                <messageCode>
+                    <xsl:value-of select="&quot;400 BAD REQUEST&quot;"/>
+                </messageCode>
+            </ns3:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Error Response">
         <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
         <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
-        <pd:x>556</pd:x>
-        <pd:y>45</pd:y>
+        <pd:x>495</pd:x>
+        <pd:y>284</pd:y>
         <config>
             <SchemaType>xsdType</SchemaType>
             <BadgerfishCheck>false</BadgerfishCheck>
             <removeRootElementForInput>true</removeRootElementForInput>
-            <ValidateIntputEnable>true</ValidateIntputEnable>
             <ActivityInputEditor>
                 <xsd:element name="ResponseData">
                     <xsd:complexType>
@@ -46,55 +76,68 @@
             <ns:ActivityInputClass>
                 <ResponseData>
                     <message>
-                        <xsl:value-of select="&quot;Custom shortlink updated successfully&quot;"/>
+                        <xsl:value-of select="$_error/ns4:ErrorReport/Msg"/>
                     </message>
                 </ResponseData>
             </ns:ActivityInputClass>
         </pd:inputBindings>
     </pd:activity>
-    <pd:activity name="404 Not Found">
-        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
-        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
-        <pd:x>556</pd:x>
-        <pd:y>239</pd:y>
-        <config>
-            <SchemaType>xsdType</SchemaType>
-            <BadgerfishCheck>false</BadgerfishCheck>
-            <removeRootElementForInput>true</removeRootElementForInput>
-            <ValidateIntputEnable>true</ValidateIntputEnable>
-            <ActivityInputEditor>
-                <xsd:element name="ResponseData">
-                    <xsd:complexType>
-                        <xsd:sequence>
-                            <xsd:element name="message" type="xsd:string"/>
-                        </xsd:sequence>
-                    </xsd:complexType>
-                </xsd:element>
-            </ActivityInputEditor>
-        </config>
-        <pd:inputBindings>
-            <ns:ActivityInputClass>
-                <ResponseData>
-                    <message>
-                        <xsl:value-of select="&quot;ShortLink not found&quot;"/>
-                    </message>
-                </ResponseData>
-            </ns:ActivityInputClass>
-        </pd:inputBindings>
-    </pd:activity>
-    <pd:activity name="is Exists ShortLink">
+    <pd:activity name="is Custom Link Exists">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>268</pd:x>
-        <pd:y>53</pd:y>
+        <pd:x>362</pd:x>
+        <pd:y>51</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
             <maxRows>100</maxRows>
             <emptyStrAsNil>false</emptyStrAsNil>
-            <statement>SELECT id 
+            <jdbcSharedConfig>/SharedResources/Connections/JDBC Connection.sharedjdbc</jdbcSharedConfig>
+            <statement>SELECT "customLink"
 FROM public."ShortLinks"
-WHERE "shortLink" = ?</statement>
+WHERE "customLink" = ?</statement>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>customLink</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>varchar</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>OptionalElement</QueryOutputCachedSchemaStatus>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>customLink</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <customLink>
+                    <xsl:choose>
+                        <xsl:when test="exists($Parse-JSON/ns:ActivityOutputClass/pfx:ShortLink/pfx:customLink)">
+                            <xsl:value-of select="$Parse-JSON/ns:ActivityOutputClass/pfx:ShortLink/pfx:customLink"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </customLink>
+            </jdbcQueryActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="is Exists ShortLink">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>238</pd:x>
+        <pd:y>51</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>SELECT id
+FROM public."ShortLinks"
+WHERE "shortLink" = ?
+AND "deletedAt" IS NULL</statement>
             <Prepared_Param_DataType>
                 <parameter>
                     <parameterName>shortLink</parameterName>
@@ -124,11 +167,31 @@ WHERE "shortLink" = ?</statement>
             </jdbcQueryActivityInput>
         </pd:inputBindings>
     </pd:activity>
+    <pd:activity name="Log">
+        <pd:type>com.tibco.pe.core.WriteToLogActivity</pd:type>
+        <pd:resourceType>ae.activities.log</pd:resourceType>
+        <pd:x>620</pd:x>
+        <pd:y>43</pd:y>
+        <config>
+            <role>INFO</role>
+            <suppressHeader>true</suppressHeader>
+        </config>
+        <pd:inputBindings>
+            <ns2:ActivityInput>
+                <message>
+                    <xsl:value-of select="200"/>
+                </message>
+                <msgCode>
+                    <xsl:value-of select="concat(&quot;Shortlink &quot;, $Parse-JSON/ns:ActivityOutputClass/pfx:ShortLink/pfx:shortLink, &quot; updated custom link to &quot; , $Parse-JSON/ns:ActivityOutputClass/pfx:ShortLink/pfx:customLink)"/>
+                </msgCode>
+            </ns2:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
     <pd:activity name="Parse JSON">
         <pd:type>com.tibco.plugin.json.activities.JSONParserActivity</pd:type>
         <pd:resourceType>ae.activities.JSONParserActivity</pd:resourceType>
-        <pd:x>159</pd:x>
-        <pd:y>45</pd:y>
+        <pd:x>131</pd:x>
+        <pd:y>43</pd:y>
         <config>
             <SchemaType>xsdType</SchemaType>
             <BadgerfishCheck>false</BadgerfishCheck>
@@ -142,11 +205,60 @@ WHERE "shortLink" = ?</statement>
             </ns:ActivityInputClass>
         </pd:inputBindings>
     </pd:activity>
+    <pd:activity name="ShortLink Not Found">
+        <pd:type>com.tibco.pe.core.GenerateErrorActivity</pd:type>
+        <pd:resourceType>ae.activities.throw</pd:resourceType>
+        <pd:x>238</pd:x>
+        <pd:y>174</pd:y>
+        <config>
+            <faultName/>
+        </config>
+        <pd:inputBindings>
+            <ns3:ActivityInput>
+                <message>
+                    <xsl:value-of select="&quot;ShortLink not found&quot;"/>
+                </message>
+                <messageCode>
+                    <xsl:value-of select="&quot;404 NOT FOUND&quot;"/>
+                </messageCode>
+            </ns3:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Success Response">
+        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
+        <pd:x>620</pd:x>
+        <pd:y>166</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <removeRootElementForInput>true</removeRootElementForInput>
+            <ValidateIntputEnable>true</ValidateIntputEnable>
+            <ActivityInputEditor>
+                <xsd:element name="ResponseData">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="message" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </ActivityInputEditor>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInputClass>
+                <ResponseData>
+                    <message>
+                        <xsl:value-of select="&quot;Custom shortlink updated successfully&quot;"/>
+                    </message>
+                </ResponseData>
+            </ns:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
     <pd:activity name="Update Custom ShortLink">
         <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-        <pd:x>383</pd:x>
-        <pd:y>53</pd:y>
+        <pd:x>495</pd:x>
+        <pd:y>51</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
@@ -199,7 +311,7 @@ WHERE "id" = ?</statement>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>200 Success</pd:from>
+        <pd:from>Success Response</pd:from>
         <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
@@ -214,14 +326,14 @@ WHERE "id" = ?</statement>
     </pd:transition>
     <pd:transition>
         <pd:from>Update Custom ShortLink</pd:from>
-        <pd:to>200 Success</pd:to>
+        <pd:to>Log</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
         <pd:from>is Exists ShortLink</pd:from>
-        <pd:to>Update Custom ShortLink</pd:to>
+        <pd:to>is Custom Link Exists</pd:to>
         <pd:xpathDescription>True</pd:xpathDescription>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
@@ -230,7 +342,7 @@ WHERE "id" = ?</statement>
     </pd:transition>
     <pd:transition>
         <pd:from>is Exists ShortLink</pd:from>
-        <pd:to>404 Not Found</pd:to>
+        <pd:to>ShortLink Not Found</pd:to>
         <pd:xpathDescription>False</pd:xpathDescription>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
@@ -238,7 +350,39 @@ WHERE "id" = ?</statement>
         <pd:xpath>empty($is-Exists-ShortLink/resultSet/Record/id)</pd:xpath>
     </pd:transition>
     <pd:transition>
-        <pd:from>404 Not Found</pd:from>
+        <pd:from>Log</pd:from>
+        <pd:to>Success Response</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>is Custom Link Exists</pd:from>
+        <pd:to>Update Custom ShortLink</pd:to>
+        <pd:xpathDescription>False</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>empty($is-Custom-Link-Exists/resultSet/Record/customLink)</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CatchAll</pd:from>
+        <pd:to>Error Response</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>is Custom Link Exists</pd:from>
+        <pd:to>Custom Link Already Exists</pd:to>
+        <pd:xpathDescription>True</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>exists($is-Custom-Link-Exists/resultSet/Record/customLink)</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Error Response</pd:from>
         <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
