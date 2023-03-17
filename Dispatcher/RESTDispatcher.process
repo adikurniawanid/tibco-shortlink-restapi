@@ -84,8 +84,8 @@
                                                 </PostData>
                                             </xsl:template>
                                         </Input-Binding>
-                                        <Output-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                                            <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <Output-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:pfx2="http://www.tibco.com/pe/EngineTypes" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:ns1="http://schemas.tibco.com/bw/plugins/jdbc/5.0/jdbcExceptions" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                            <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:pfx2="http://www.tibco.com/pe/EngineTypes" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:ns1="http://schemas.tibco.com/bw/plugins/jdbc/5.0/jdbcExceptions" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                                                 <RESTResponse>
                                                     <xsl:if test="$End/ResponseData">
                                                         <asciiContent>
@@ -93,6 +93,18 @@
                                                         </asciiContent>
                                                     </xsl:if>
                                                     <Headers>
+                                                        <xsl:choose>
+                                                            <xsl:when test="exists($Error-Response/ns:ActivityOutputClass/jsonString)">
+                                                                <StatusLine>
+                                                                    <xsl:value-of select="&quot;HTTP/1.1 400 Bad Request&quot;"/>
+                                                                </StatusLine>
+                                                            </xsl:when>
+                                                            <xsl:otherwise>
+                                                                <StatusLine>
+                                                                    <xsl:value-of select="&quot;HTTP/1.1 201 Created&quot;"/>
+                                                                </StatusLine>
+                                                            </xsl:otherwise>
+                                                        </xsl:choose>
                                                         <Content-Type>
                                                             <xsl:value-of select="&quot;application/json&quot;"/>
                                                         </Content-Type>
@@ -118,13 +130,30 @@
                                                 </xsd:complexType>
                                             </xsd:element>
                                         </RESTResponseHeader>
-                                        <Output-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                                            <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <Output-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:ns1="http://schemas.tibco.com/bw/plugins/xml/5.0/RESTJSONExceptions" xmlns:ns4="http://www.tibco.com/pe/EngineTypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns3="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema">
+                                            <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:ns1="http://schemas.tibco.com/bw/plugins/xml/5.0/RESTJSONExceptions" xmlns:ns4="http://www.tibco.com/pe/EngineTypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns3="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema">
                                                 <RESTResponse>
                                                     <asciiContent>
                                                         <xsl:value-of select="$End/ResponseData"/>
                                                     </asciiContent>
                                                     <Headers>
+                                                        <xsl:choose>
+                                                            <xsl:when test="exists($is-Custom-Link-Exists/resultSet/Record/customLink)">
+                                                                <StatusLine>
+                                                                    <xsl:value-of select="&quot;HTTP/1.1 400 Bad Request&quot;"/>
+                                                                </StatusLine>
+                                                            </xsl:when>
+                                                            <xsl:when test="empty($is-Exists-ShortLink/resultSet/Record/id)">
+                                                                <StatusLine>
+                                                                    <xsl:value-of select="&quot;HTTP/1.1 404 Not Found&quot;"/>
+                                                                </StatusLine>
+                                                            </xsl:when>
+                                                            <xsl:otherwise>
+                                                                <StatusLine>
+                                                                    <xsl:value-of select="&quot;HTTP/1.1 200 OK&quot;"/>
+                                                                </StatusLine>
+                                                            </xsl:otherwise>
+                                                        </xsl:choose>
                                                         <Content-Type>
                                                             <xsl:value-of select="&quot;application/json&quot;"/>
                                                         </Content-Type>
@@ -165,8 +194,8 @@
                                                     </shortLink>
                                                 </xsl:template>
                                             </Input-Binding>
-                                            <Output-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://www.tibco.com/pe/EngineTypes">
-                                                <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" match="/*">
+                                            <Output-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:ns1="http://www.tibco.com/pe/EngineTypes">
+                                                <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:ns1="http://www.tibco.com/pe/EngineTypes">
                                                     <RESTResponse>
                                                         <xsl:if test="$End/ResponseData">
                                                             <asciiContent>
@@ -174,6 +203,18 @@
                                                             </asciiContent>
                                                         </xsl:if>
                                                         <Headers>
+                                                            <xsl:choose>
+                                                                <xsl:when test="exists($Error-Response/ns:ActivityOutputClass/jsonString)">
+                                                                    <StatusLine>
+                                                                        <xsl:value-of select="&quot;HTTP/1.1 404 Not Found&quot;"/>
+                                                                    </StatusLine>
+                                                                </xsl:when>
+                                                                <xsl:otherwise>
+                                                                    <StatusLine>
+                                                                        <xsl:value-of select="&quot;HTTP/1.1 200 OK&quot;"/>
+                                                                    </StatusLine>
+                                                                </xsl:otherwise>
+                                                            </xsl:choose>
                                                             <Content-Type>
                                                                 <xsl:value-of select="&quot;application/json&quot;"/>
                                                             </Content-Type>
@@ -208,8 +249,8 @@
                                                     </ns:shortLink>
                                                 </xsl:template>
                                             </Input-Binding>
-                                            <Output-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                                                <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" match="/*">
+                                            <Output-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                                <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                                                     <RESTResponse>
                                                         <xsl:if test="$End/ResponseData">
                                                             <asciiContent>
@@ -217,6 +258,18 @@
                                                             </asciiContent>
                                                         </xsl:if>
                                                         <Headers>
+                                                            <xsl:choose>
+                                                                <xsl:when test="exists($Error-Response/ns:ActivityOutputClass/jsonString)">
+                                                                    <StatusLine>
+                                                                        <xsl:value-of select="&quot;HTTP/1.1 404 Not Found&quot;"/>
+                                                                    </StatusLine>
+                                                                </xsl:when>
+                                                                <xsl:otherwise>
+                                                                    <StatusLine>
+                                                                        <xsl:value-of select="&quot;HTTP/1.1 200 OK&quot;"/>
+                                                                    </StatusLine>
+                                                                </xsl:otherwise>
+                                                            </xsl:choose>
                                                             <Content-Type>
                                                                 <xsl:value-of select="&quot;application/json&quot;"/>
                                                             </Content-Type>
@@ -243,8 +296,8 @@
                                                 </xsd:complexType>
                                             </xsd:element>
                                         </RESTResponseHeader>
-                                        <Output-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-                                            <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" match="/*">
+                                        <Output-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:ns1="http://www.tibco.com/pe/EngineTypes">
+                                            <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:ns1="http://www.tibco.com/pe/EngineTypes">
                                                 <RESTResponse>
                                                     <xsl:if test="$End/ResponseData">
                                                         <asciiContent>
@@ -252,6 +305,18 @@
                                                         </asciiContent>
                                                     </xsl:if>
                                                     <Headers>
+                                                        <xsl:choose>
+                                                            <xsl:when test="exists($Not-Found/ns:ActivityOutputClass/jsonString)">
+                                                                <StatusLine>
+                                                                    <xsl:value-of select="&quot;HTTP/1.1 404 Not Found&quot;"/>
+                                                                </StatusLine>
+                                                            </xsl:when>
+                                                            <xsl:otherwise>
+                                                                <StatusLine>
+                                                                    <xsl:value-of select="&quot;HTTP/1.1 200 OK&quot;"/>
+                                                                </StatusLine>
+                                                            </xsl:otherwise>
+                                                        </xsl:choose>
                                                         <Content-Type>
                                                             <xsl:value-of select="&quot;application/json&quot;"/>
                                                         </Content-Type>
@@ -375,8 +440,8 @@
                                                 </userLink>
                                             </xsl:template>
                                         </Input-Binding>
-                                        <Output-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                                            <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" match="/*">
+                                        <Output-Binding xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                            <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                                                 <RESTResponse>
                                                     <xsl:if test="$End/ResponseData">
                                                         <asciiContent>
@@ -384,6 +449,18 @@
                                                         </asciiContent>
                                                     </xsl:if>
                                                     <Headers>
+                                                        <xsl:choose>
+                                                            <xsl:when test="exists($Error-Response/ns:ActivityOutputClass/jsonString)">
+                                                                <StatusLine>
+                                                                    <xsl:value-of select="&quot;HTTP/1.1 404 Not Found&quot;"/>
+                                                                </StatusLine>
+                                                            </xsl:when>
+                                                            <xsl:otherwise>
+                                                                <StatusLine>
+                                                                    <xsl:value-of select="&quot;HTTP/1.1 302 Found&quot;"/>
+                                                                </StatusLine>
+                                                            </xsl:otherwise>
+                                                        </xsl:choose>
                                                         <Content-Type>
                                                             <xsl:value-of select="&quot;application/json&quot;"/>
                                                         </Content-Type>
