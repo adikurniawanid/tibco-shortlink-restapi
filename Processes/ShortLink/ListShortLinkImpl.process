@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:ns1="http://www.tibco.com/pe/EngineTypes">
     <xsd:import namespace="http://www.tibco.com/schemas/tibco-shortlink-rest/SharedResources/Schemas/Schema.xsd" schemaLocation="/SharedResources/Schemas/ShortlinkSchema.xsd"/>
     <pd:name>Processes/ShortLink/ListShortLinkImpl.process</pd:name>
     <pd:startName>Start</pd:startName>
-    <pd:startX>120</pd:startX>
-    <pd:startY>104</pd:startY>
+    <pd:startX>27</pd:startX>
+    <pd:startY>35</pd:startY>
     <pd:returnBindings>
         <ResponseData>
             <xsl:value-of select="if ($Success/ns:ActivityOutputClass/jsonString) then $Success/ns:ActivityOutputClass/jsonString else $Not-Found/ns:ActivityOutputClass/jsonString"/>
@@ -14,16 +14,16 @@
     <pd:endType>
         <xsd:element name="ResponseData" type="xsd:string"/>
     </pd:endType>
-    <pd:endX>648</pd:endX>
-    <pd:endY>112</pd:endY>
+    <pd:endX>415</pd:endX>
+    <pd:endY>35</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables/>
     <pd:targetNamespace>http://xmlns.example.com/1678682690385</pd:targetNamespace>
     <pd:activity name="404 Not Found">
         <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
         <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
-        <pd:x>479</pd:x>
-        <pd:y>195</pd:y>
+        <pd:x>415</pd:x>
+        <pd:y>146</pd:y>
         <config>
             <SchemaType>xsdType</SchemaType>
             <BadgerfishCheck>false</BadgerfishCheck>
@@ -43,17 +43,28 @@
             <ns:ActivityInputClass>
                 <ResponseData>
                     <message>
-                        <xsl:value-of select="&quot;ShortLink list not found&quot;"/>
+                        <xsl:value-of select="$_error/ns1:ErrorReport/Msg"/>
                     </message>
                 </ResponseData>
             </ns:ActivityInputClass>
         </pd:inputBindings>
     </pd:activity>
+    <pd:activity name="Catch All">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>295</pd:x>
+        <pd:y>146</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
     <pd:activity name="List Short Link">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>296</pd:x>
-        <pd:y>104</pd:y>
+        <pd:x>136</pd:x>
+        <pd:y>35</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
@@ -89,8 +100,8 @@ WHERE "deletedAt" IS NULL</statement>
     <pd:activity name="schemaBased">
         <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
         <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
-        <pd:x>482</pd:x>
-        <pd:y>388</pd:y>
+        <pd:x>567</pd:x>
+        <pd:y>35</pd:y>
         <config>
             <SchemaType>xsdType</SchemaType>
             <BadgerfishCheck>false</BadgerfishCheck>
@@ -148,11 +159,27 @@ WHERE "deletedAt" IS NULL</statement>
             </ns:ActivityInputClass>
         </pd:inputBindings>
     </pd:activity>
-    <pd:activity name="200 Success">
+    <pd:activity name="ShortLink List Not Found">
+        <pd:type>com.tibco.pe.core.GenerateErrorActivity</pd:type>
+        <pd:resourceType>ae.activities.throw</pd:resourceType>
+        <pd:x>136</pd:x>
+        <pd:y>154</pd:y>
+        <config>
+            <faultName/>
+        </config>
+        <pd:inputBindings>
+            <ns2:ActivityInput>
+                <message>
+                    <xsl:value-of select="&quot;ShortLink list not found&quot;"/>
+                </message>
+            </ns2:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Success">
         <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
         <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
-        <pd:x>484</pd:x>
-        <pd:y>108</pd:y>
+        <pd:x>295</pd:x>
+        <pd:y>35</pd:y>
         <config>
             <SchemaType>xsdType</SchemaType>
             <BadgerfishCheck>false</BadgerfishCheck>
@@ -213,8 +240,8 @@ WHERE "deletedAt" IS NULL</statement>
     </pd:transition>
     <pd:transition>
         <pd:from>List Short Link</pd:from>
-        <pd:to>404 Not Found</pd:to>
-        <pd:xpathDescription>404 Not Found</pd:xpathDescription>
+        <pd:to>ShortLink List Not Found</pd:to>
+        <pd:xpathDescription>Not Found</pd:xpathDescription>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>xpath</pd:conditionType>
@@ -229,7 +256,7 @@ WHERE "deletedAt" IS NULL</statement>
     </pd:transition>
     <pd:transition>
         <pd:from>List Short Link</pd:from>
-        <pd:to>200 Success</pd:to>
+        <pd:to>Success</pd:to>
         <pd:xpathDescription>Success</pd:xpathDescription>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
@@ -237,8 +264,15 @@ WHERE "deletedAt" IS NULL</statement>
         <pd:xpath>exists($List-Short-Link/resultSet/Record)</pd:xpath>
     </pd:transition>
     <pd:transition>
-        <pd:from>200 Success</pd:from>
+        <pd:from>Success</pd:from>
         <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch All</pd:from>
+        <pd:to>404 Not Found</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
