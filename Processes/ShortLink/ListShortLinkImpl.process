@@ -172,6 +172,9 @@ WHERE "deletedAt" IS NULL</statement>
                 <message>
                     <xsl:value-of select="&quot;ShortLink list not found&quot;"/>
                 </message>
+                <messageCode>
+                    <xsl:value-of select="&quot;404 NOT FOUND&quot;"/>
+                </messageCode>
             </ns2:ActivityInput>
         </pd:inputBindings>
     </pd:activity>
