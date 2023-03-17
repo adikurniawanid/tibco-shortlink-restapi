@@ -1,65 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <pd:name>Processes/ShortLink/RedirectImpl.process</pd:name>
     <pd:startName>Start</pd:startName>
     <pd:startType>
         <xsd:element name="userLink" type="xsd:string"/>
     </pd:startType>
     <pd:startX>27</pd:startX>
-    <pd:startY>183</pd:startY>
+    <pd:startY>53</pd:startY>
     <pd:returnBindings>
         <ResponseData>
-            <xsl:value-of select="if ($Get-Original-UrL/resultSet/Record/originalLink) then $Redirect/ns:ActivityOutputClass/jsonString else $Not-Found/ns:ActivityOutputClass/jsonString"/>
+            <xsl:value-of select="if ($Get-Original-UrL/resultSet/Record/originalLink) then $Redirect/ns:ActivityOutputClass/jsonString else $Error-Response/ns:ActivityOutputClass/jsonString"/>
         </ResponseData>
     </pd:returnBindings>
     <pd:endName>End</pd:endName>
     <pd:endType>
         <xsd:element name="ResponseData" type="xsd:string"/>
     </pd:endType>
-    <pd:endX>841</pd:endX>
-    <pd:endY>183</pd:endY>
+    <pd:endX>555</pd:endX>
+    <pd:endY>118</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables/>
     <pd:targetNamespace>http://xmlns.example.com/1678758908698</pd:targetNamespace>
-    <pd:activity name="301 Redirect">
-        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
-        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
-        <pd:x>644</pd:x>
-        <pd:y>183</pd:y>
+    <pd:activity name="Catch All">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>269</pd:x>
+        <pd:y>171</pd:y>
+        <pd:handler>true</pd:handler>
         <config>
-            <SchemaType>xsdType</SchemaType>
-            <BadgerfishCheck>false</BadgerfishCheck>
-            <removeRootElementForInput>true</removeRootElementForInput>
-            <ValidateIntputEnable>true</ValidateIntputEnable>
-            <ActivityInputEditor>
-                <xsd:element name="ResponseData">
-                    <xsd:complexType>
-                        <xsd:sequence>
-                            <xsd:element name="message" type="xsd:string"/>
-                            <xsd:element name="originalLink" type="xsd:string"/>
-                        </xsd:sequence>
-                    </xsd:complexType>
-                </xsd:element>
-            </ActivityInputEditor>
+            <catchAll>true</catchAll>
         </config>
-        <pd:inputBindings>
-            <ns:ActivityInputClass>
-                <ResponseData>
-                    <message>
-                        <xsl:value-of select="&quot;Redirect shortlink successfully&quot;"/>
-                    </message>
-                    <originalLink>
-                        <xsl:value-of select="$Get-Original-UrL/resultSet/Record[1]/originalLink"/>
-                    </originalLink>
-                </ResponseData>
-            </ns:ActivityInputClass>
-        </pd:inputBindings>
+        <pd:inputBindings/>
     </pd:activity>
-    <pd:activity name="404 Not Found">
+    <pd:activity name="Error Response">
         <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
         <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
-        <pd:x>644</pd:x>
-        <pd:y>306</pd:y>
+        <pd:x>409</pd:x>
+        <pd:y>171</pd:y>
         <config>
             <SchemaType>xsdType</SchemaType>
             <BadgerfishCheck>false</BadgerfishCheck>
@@ -79,7 +56,7 @@
             <ns:ActivityInputClass>
                 <ResponseData>
                     <message>
-                        <xsl:value-of select="&quot;Shortlink not found&quot;"/>
+                        <xsl:value-of select="$_error/ns1:ErrorReport/Msg"/>
                     </message>
                 </ResponseData>
             </ns:ActivityInputClass>
@@ -88,8 +65,8 @@
     <pd:activity name="Get Original UrL">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>230</pd:x>
-        <pd:y>183</pd:y>
+        <pd:x>121</pd:x>
+        <pd:y>53</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
@@ -132,11 +109,64 @@ AND "deletedAt" IS NULL</statement>
             </jdbcQueryActivityInput>
         </pd:inputBindings>
     </pd:activity>
+    <pd:activity name="Redirect">
+        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
+        <pd:x>409</pd:x>
+        <pd:y>53</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <removeRootElementForInput>true</removeRootElementForInput>
+            <ValidateIntputEnable>true</ValidateIntputEnable>
+            <ActivityInputEditor>
+                <xsd:element name="ResponseData">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="message" type="xsd:string"/>
+                            <xsd:element name="originalLink" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </ActivityInputEditor>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInputClass>
+                <ResponseData>
+                    <message>
+                        <xsl:value-of select="&quot;Redirect shortlink successfully&quot;"/>
+                    </message>
+                    <originalLink>
+                        <xsl:value-of select="$Get-Original-UrL/resultSet/Record[1]/originalLink"/>
+                    </originalLink>
+                </ResponseData>
+            </ns:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="ShortLink Not Found">
+        <pd:type>com.tibco.pe.core.GenerateErrorActivity</pd:type>
+        <pd:resourceType>ae.activities.throw</pd:resourceType>
+        <pd:x>121</pd:x>
+        <pd:y>179</pd:y>
+        <config>
+            <faultName/>
+        </config>
+        <pd:inputBindings>
+            <ns2:ActivityInput>
+                <message>
+                    <xsl:value-of select="&quot;Shortlink not found&quot;"/>
+                </message>
+                <messageCode>
+                    <xsl:value-of select="&quot;404 NOT FOUND&quot;"/>
+                </messageCode>
+            </ns2:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
     <pd:activity name="Update Total Click">
         <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-        <pd:x>469</pd:x>
-        <pd:y>183</pd:y>
+        <pd:x>269</pd:x>
+        <pd:y>53</pd:y>
         <config>
             <timeout>10</timeout>
             <commit>false</commit>
@@ -168,7 +198,7 @@ WHERE id = ?</statement>
         </pd:inputBindings>
     </pd:activity>
     <pd:transition>
-        <pd:from>301 Redirect</pd:from>
+        <pd:from>Redirect</pd:from>
         <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
@@ -192,14 +222,14 @@ WHERE id = ?</statement>
     </pd:transition>
     <pd:transition>
         <pd:from>Update Total Click</pd:from>
-        <pd:to>301 Redirect</pd:to>
+        <pd:to>Redirect</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
         <pd:from>Get Original UrL</pd:from>
-        <pd:to>404 Not Found</pd:to>
+        <pd:to>ShortLink Not Found</pd:to>
         <pd:xpathDescription>Not Found</pd:xpathDescription>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
@@ -207,8 +237,15 @@ WHERE id = ?</statement>
         <pd:xpath>empty($Get-Original-UrL/resultSet/Record/originalLink)</pd:xpath>
     </pd:transition>
     <pd:transition>
-        <pd:from>404 Not Found</pd:from>
+        <pd:from>Error Response</pd:from>
         <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch All</pd:from>
+        <pd:to>Error Response</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
