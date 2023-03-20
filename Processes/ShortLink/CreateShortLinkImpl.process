@@ -48,6 +48,15 @@
                     <xsd:complexType>
                         <xsd:sequence>
                             <xsd:element name="message" type="xsd:string"/>
+                            <xsd:element name="data">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="originalLink" type="xsd:string"/>
+                                        <xsd:element name="shortLink" type="xsd:string"/>
+                                        <xsd:element name="customLink" type="xsd:string"/>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
                         </xsd:sequence>
                     </xsd:complexType>
                 </xsd:element>
@@ -57,8 +66,19 @@
             <ns:ActivityInputClass>
                 <ResponseData>
                     <message>
-                        <xsl:value-of select="concat(&quot;ShortLink for url &quot;, $Parse-JSON/ns:ActivityOutputClass/pfx:ShortLink/pfx:originalLink ,&quot; Created Successfully&quot;)"/>
+                        <xsl:value-of select="concat(&quot;ShortLink for url &quot;, $Create-ShortLink/jdbcUpdateActivityOutput/noOfUpdates ,&quot; Created Successfully&quot;)"/>
                     </message>
+                    <data>
+                        <originalLink>
+                            <xsl:value-of select="$Parse-JSON/ns:ActivityOutputClass/pfx:ShortLink/pfx:originalLink"/>
+                        </originalLink>
+                        <shortLink>
+                            <xsl:value-of select="$shortLink-Generator/javaCodeActivityOutput/shortLink"/>
+                        </shortLink>
+                        <customLink>
+                            <xsl:value-of select="$Parse-JSON/ns:ActivityOutputClass/pfx:ShortLink/pfx:customLink"/>
+                        </customLink>
+                    </data>
                 </ResponseData>
             </ns:ActivityInputClass>
         </pd:inputBindings>

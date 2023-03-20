@@ -254,6 +254,14 @@ AND "deletedAt" IS NULL</statement>
                     <xsd:complexType>
                         <xsd:sequence>
                             <xsd:element name="message" type="xsd:string"/>
+                            <xsd:element name="data">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="shortLink" type="xsd:string"/>
+                                        <xsd:element name="customLink" type="xsd:string"/>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
                         </xsd:sequence>
                     </xsd:complexType>
                 </xsd:element>
@@ -265,6 +273,14 @@ AND "deletedAt" IS NULL</statement>
                     <message>
                         <xsl:value-of select="&quot;Custom shortlink updated successfully&quot;"/>
                     </message>
+                    <data>
+                        <shortLink>
+                            <xsl:value-of select="$Parse-JSON/ns:ActivityOutputClass/pfx:ShortLink/pfx:shortLink"/>
+                        </shortLink>
+                        <customLink>
+                            <xsl:value-of select="$Parse-JSON/ns:ActivityOutputClass/pfx:ShortLink/pfx:customLink"/>
+                        </customLink>
+                    </data>
                 </ResponseData>
             </ns:ActivityInputClass>
         </pd:inputBindings>
