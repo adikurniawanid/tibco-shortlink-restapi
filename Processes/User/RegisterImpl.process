@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-restapi/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/schemas/tibco-shortlink-restapi/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:pfx2="http://www.tibco.com/namespaces/tnt/plugins/file/v2" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:pfx3="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/namespaces/tnt/plugins/mail" xmlns:ns1="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:ns4="http://www.tibco.com/pe/EngineTypes" xmlns:ns3="http://xmlns.tibco.com/body">
     <xsd:import namespace="http://www.tibco.com/schemas/tibco-shortlink-restapi/SharedResources/Schemas/Schema.xsd" schemaLocation="/SharedResources/Schemas/UserSchema.xsd"/>
     <pd:name>Processes/User/RegisterImpl.process</pd:name>
     <pd:startName>Start</pd:startName>
@@ -10,41 +10,186 @@
     <pd:startY>35</pd:startY>
     <pd:returnBindings>
         <ResponseData>
-            <xsl:value-of select="if ($Created/ns:ActivityOutputClass/jsonString) then $Created/ns:ActivityOutputClass/jsonString else $Bad-Request/ns:ActivityOutputClass/jsonString"/>
+            <xsl:value-of select="if ($Created/ns:ActivityOutputClass/jsonString) then $Created/ns:ActivityOutputClass/jsonString else $Error-Response/ns:ActivityOutputClass/jsonString"/>
         </ResponseData>
     </pd:returnBindings>
     <pd:endName>End</pd:endName>
     <pd:endType>
         <xsd:element name="ResponseData" type="xsd:string"/>
     </pd:endType>
-    <pd:endX>702</pd:endX>
-    <pd:endY>35</pd:endY>
+    <pd:endX>692</pd:endX>
+    <pd:endY>161</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables/>
     <pd:targetNamespace>http://xmlns.example.com/1678852664779</pd:targetNamespace>
-    <pd:activity name="Parse JSON">
-        <pd:type>com.tibco.plugin.json.activities.JSONParserActivity</pd:type>
-        <pd:resourceType>ae.activities.JSONParserActivity</pd:resourceType>
-        <pd:x>116</pd:x>
+    <pd:activity name="201 Created">
+        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
+        <pd:x>692</pd:x>
         <pd:y>35</pd:y>
         <config>
             <SchemaType>xsdType</SchemaType>
             <BadgerfishCheck>false</BadgerfishCheck>
-            <ValidateOutputEnable>false</ValidateOutputEnable>
-            <ActivityOutputEditor ref="pfx:User"/>
+            <removeRootElementForInput>true</removeRootElementForInput>
+            <ActivityInputEditor>
+                <xsd:element name="ResponseData">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="message" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </ActivityInputEditor>
         </config>
         <pd:inputBindings>
             <ns:ActivityInputClass>
-                <jsonString>
-                    <xsl:value-of select="$Start/PostData"/>
-                </jsonString>
+                <ResponseData>
+                    <message>
+                        <xsl:value-of select="concat(&quot;User with username &quot;, $Parse-JSON/ns:ActivityOutputClass/pfx:User/pfx:username, &quot; created successfully&quot;)"/>
+                    </message>
+                </ResponseData>
             </ns:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch All">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>470</pd:x>
+        <pd:y>159</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Create User">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>470</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>INSERT INTO public."Users" ( username, password, email)
+ VALUES (?,?, ?)</statement>
+            <jdbcSharedConfig>/SharedResources/Connections/JDBC Connection.sharedjdbc</jdbcSharedConfig>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>username</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>password</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>email</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <username>
+                    <xsl:value-of select="$Parse-JSON/ns:ActivityOutputClass/pfx:User/pfx:username"/>
+                </username>
+                <password>
+                    <xsl:value-of select="$Parse-JSON/ns:ActivityOutputClass/pfx:User/pfx:password"/>
+                </password>
+                <email>
+                    <xsl:value-of select="$Parse-JSON/ns:ActivityOutputClass/pfx:User/pfx:email"/>
+                </email>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Email Already Exists">
+        <pd:type>com.tibco.pe.core.GenerateErrorActivity</pd:type>
+        <pd:resourceType>ae.activities.throw</pd:resourceType>
+        <pd:x>364</pd:x>
+        <pd:y>158</pd:y>
+        <config>
+            <faultName/>
+        </config>
+        <pd:inputBindings>
+            <pfx3:ActivityInput>
+                <message>
+                    <xsl:value-of select="&quot;Email already exists, please use another email&quot;"/>
+                </message>
+                <messageCode>
+                    <xsl:value-of select="&quot;400 BAD REQUEST&quot;"/>
+                </messageCode>
+            </pfx3:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Error Response">
+        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
+        <pd:x>594</pd:x>
+        <pd:y>159</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <removeRootElementForInput>true</removeRootElementForInput>
+            <ActivityInputEditor>
+                <xsd:element name="ResponseData">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="message" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </ActivityInputEditor>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInputClass>
+                <ResponseData>
+                    <message>
+                        <xsl:value-of select="$_error/ns4:ErrorReport/Msg"/>
+                    </message>
+                </ResponseData>
+            </ns:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="is Email Exists">
+        <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
+        <pd:x>364</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <maxRows>100</maxRows>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <statement>SELECT "email"
+FROM public."Users"
+WHERE "email" = ?</statement>
+            <jdbcSharedConfig>/SharedResources/Connections/JDBC Connection.sharedjdbc</jdbcSharedConfig>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>email</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+            <oraObjects/>
+            <oraTables/>
+            <QueryOutputCachedSchemaColumns>email</QueryOutputCachedSchemaColumns>
+            <QueryOutputCachedSchemaDataTypes>12</QueryOutputCachedSchemaDataTypes>
+            <QueryOutputCachedSchemaDataTypesName>varchar</QueryOutputCachedSchemaDataTypesName>
+            <QueryOutputCachedSchemaStatus>RequiredElement</QueryOutputCachedSchemaStatus>
+        </config>
+        <pd:inputBindings>
+            <jdbcQueryActivityInput>
+                <email>
+                    <xsl:value-of select="$Parse-JSON/ns:ActivityOutputClass/pfx:User/pfx:email"/>
+                </email>
+            </jdbcQueryActivityInput>
         </pd:inputBindings>
     </pd:activity>
     <pd:activity name="is Username Exists">
         <pd:type>com.tibco.plugin.jdbc.JDBCQueryActivity</pd:type>
         <pd:resourceType>ae.activities.JDBCQueryActivity</pd:resourceType>
-        <pd:x>267</pd:x>
+        <pd:x>239</pd:x>
         <pd:y>35</pd:y>
         <config>
             <timeout>10</timeout>
@@ -76,96 +221,92 @@ WHERE "username" = ?</statement>
             </jdbcQueryActivityInput>
         </pd:inputBindings>
     </pd:activity>
-    <pd:activity name="Create User">
-        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
-        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
-        <pd:x>427</pd:x>
+    <pd:activity name="Parse JSON">
+        <pd:type>com.tibco.plugin.json.activities.JSONParserActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONParserActivity</pd:resourceType>
+        <pd:x>116</pd:x>
         <pd:y>35</pd:y>
         <config>
-            <timeout>10</timeout>
-            <commit>false</commit>
-            <emptyStrAsNil>false</emptyStrAsNil>
-            <statement>INSERT INTO public."Users" ( username, password)
- VALUES (?,?)</statement>
-            <Prepared_Param_DataType>
-                <parameter>
-                    <parameterName>username</parameterName>
-                    <dataType>VARCHAR</dataType>
-                </parameter>
-                <parameter>
-                    <parameterName>password</parameterName>
-                    <dataType>VARCHAR</dataType>
-                </parameter>
-            </Prepared_Param_DataType>
-            <jdbcSharedConfig>/SharedResources/Connections/JDBC Connection.sharedjdbc</jdbcSharedConfig>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <ValidateOutputEnable>true</ValidateOutputEnable>
+            <ActivityOutputEditor ref="pfx:User"/>
         </config>
         <pd:inputBindings>
-            <jdbcUpdateActivityInput>
+            <ns:ActivityInputClass>
+                <jsonString>
+                    <xsl:value-of select="$Start/PostData"/>
+                </jsonString>
+            </ns:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Send Mail">
+        <pd:type>com.tibco.plugin.mail.MailPubActivity</pd:type>
+        <pd:resourceType>ae.activities.MailActivityResource</pd:resourceType>
+        <pd:x>594</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <newMimeSupport>true</newMimeSupport>
+            <inputOutputVersion>5.2.0</inputOutputVersion>
+            <host>sandbox.smtp.mailtrap.io:2525</host>
+            <authenticate>true</authenticate>
+            <authScheme>Basic Authentication</authScheme>
+            <username>575c9f49588c04</username>
+            <password>fecaa8711fa38f</password>
+            <useSsl>false</useSsl>
+            <ns0:ssl xmlns:ns0="http://www.tibco.com/xmlns/aemeta/services/2002"/>
+            <InputHeaders>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </InputHeaders>
+        </config>
+        <pd:inputBindings>
+            <ns2:mailActivityInput>
                 <username>
-                    <xsl:value-of select="$Parse-JSON/ns:ActivityOutputClass/pfx:User/pfx:username"/>
+                    <xsl:value-of select="&quot;575c9f49588c04&quot;"/>
                 </username>
-                <password>
-                    <xsl:value-of select="$Parse-JSON/ns:ActivityOutputClass/pfx:User/pfx:password"/>
-                </password>
-            </jdbcUpdateActivityInput>
+                <from>
+                    <xsl:value-of select="&quot;no_reply@shortlink.app&quot;"/>
+                </from>
+                <to>
+                    <xsl:value-of select="$Parse-JSON/ns:ActivityOutputClass/pfx:User/pfx:email"/>
+                </to>
+                <subject>
+                    <xsl:value-of select="concat(&quot;Pembuatan Akun ShortLink &quot;,$Parse-JSON/ns:ActivityOutputClass/pfx:User/pfx:username )"/>
+                </subject>
+                <sentdate>
+                    <xsl:value-of select="&quot;20/03/2023&quot;"/>
+                </sentdate>
+                <ns3:bodyElement>
+                    <bodyText>
+                        <xsl:value-of select="concat(&quot;Selamat, akun shortlink &quot;,$Parse-JSON/ns:ActivityOutputClass/pfx:User/pfx:username ,&quot;  application anda berhasil dibuat&quot;)"/>
+                    </bodyText>
+                </ns3:bodyElement>
+            </ns2:mailActivityInput>
         </pd:inputBindings>
     </pd:activity>
-    <pd:activity name="400 Bad Request">
-        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
-        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
-        <pd:x>563</pd:x>
-        <pd:y>227</pd:y>
+    <pd:activity name="Username Already Exists">
+        <pd:type>com.tibco.pe.core.GenerateErrorActivity</pd:type>
+        <pd:resourceType>ae.activities.throw</pd:resourceType>
+        <pd:x>239</pd:x>
+        <pd:y>161</pd:y>
         <config>
-            <SchemaType>xsdType</SchemaType>
-            <BadgerfishCheck>false</BadgerfishCheck>
-            <removeRootElementForInput>true</removeRootElementForInput>
-            <ActivityInputEditor>
-                <xsd:element name="ResponseData">
-                    <xsd:complexType>
-                        <xsd:sequence>
-                            <xsd:element name="message" type="xsd:string"/>
-                        </xsd:sequence>
-                    </xsd:complexType>
-                </xsd:element>
-            </ActivityInputEditor>
+            <faultName/>
         </config>
         <pd:inputBindings>
-            <ns:ActivityInputClass>
-                <ResponseData>
-                    <message>
-                        <xsl:value-of select="&quot;Username already exists, please use another username&quot;"/>
-                    </message>
-                </ResponseData>
-            </ns:ActivityInputClass>
-        </pd:inputBindings>
-    </pd:activity>
-    <pd:activity name="201 Created">
-        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
-        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
-        <pd:x>553</pd:x>
-        <pd:y>35</pd:y>
-        <config>
-            <SchemaType>xsdType</SchemaType>
-            <BadgerfishCheck>false</BadgerfishCheck>
-            <removeRootElementForInput>true</removeRootElementForInput>
-            <ActivityInputEditor>
-                <xsd:element name="ResponseData">
-                    <xsd:complexType>
-                        <xsd:sequence>
-                            <xsd:element name="message" type="xsd:string"/>
-                        </xsd:sequence>
-                    </xsd:complexType>
-                </xsd:element>
-            </ActivityInputEditor>
-        </config>
-        <pd:inputBindings>
-            <ns:ActivityInputClass>
-                <ResponseData>
-                    <message>
-                        <xsl:value-of select="concat(&quot;User with username &quot;, $Parse-JSON/ns:ActivityOutputClass/pfx:User/pfx:username, &quot; created successfully&quot;)"/>
-                    </message>
-                </ResponseData>
-            </ns:ActivityInputClass>
+            <pfx3:ActivityInput>
+                <message>
+                    <xsl:value-of select="&quot;Username already exists, please use another username&quot;"/>
+                </message>
+                <messageCode>
+                    <xsl:value-of select="&quot;400 BAD REQUEST&quot;"/>
+                </messageCode>
+            </pfx3:ActivityInput>
         </pd:inputBindings>
     </pd:activity>
     <pd:transition>
@@ -184,25 +325,16 @@ WHERE "username" = ?</statement>
     </pd:transition>
     <pd:transition>
         <pd:from>is Username Exists</pd:from>
-        <pd:to>Create User</pd:to>
-        <pd:xpathDescription>True</pd:xpathDescription>
+        <pd:to>is Email Exists</pd:to>
+        <pd:xpathDescription>False</pd:xpathDescription>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>xpath</pd:conditionType>
         <pd:xpath>empty($is-Username-Exists/resultSet/Record/username)</pd:xpath>
     </pd:transition>
     <pd:transition>
-        <pd:from>is Username Exists</pd:from>
-        <pd:to>400 Bad Request</pd:to>
-        <pd:xpathDescription>False</pd:xpathDescription>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>xpath</pd:conditionType>
-        <pd:xpath>exists($is-Username-Exists/resultSet/Record/username)</pd:xpath>
-    </pd:transition>
-    <pd:transition>
         <pd:from>Create User</pd:from>
-        <pd:to>201 Created</pd:to>
+        <pd:to>Send Mail</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -215,8 +347,49 @@ WHERE "username" = ?</statement>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>400 Bad Request</pd:from>
+        <pd:from>Error Response</pd:from>
         <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Send Mail</pd:from>
+        <pd:to>201 Created</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>is Username Exists</pd:from>
+        <pd:to>Username Already Exists</pd:to>
+        <pd:xpathDescription>True</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>exists($is-Username-Exists/resultSet/Record/username)</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>is Email Exists</pd:from>
+        <pd:to>Create User</pd:to>
+        <pd:xpathDescription>False</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>empty($is-Email-Exists/resultSet/Record/email)</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>is Email Exists</pd:from>
+        <pd:to>Email Already Exists</pd:to>
+        <pd:xpathDescription>True</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>exists($is-Email-Exists/resultSet/Record/email)</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch All</pd:from>
+        <pd:to>Error Response</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
