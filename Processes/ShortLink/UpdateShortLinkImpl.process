@@ -95,7 +95,8 @@
             <jdbcSharedConfig>/SharedResources/Connections/JDBC Connection.sharedjdbc</jdbcSharedConfig>
             <statement>SELECT "customLink"
 FROM public."ShortLinks"
-WHERE "customLink" = ?</statement>
+WHERE "customLink" = ?
+OR "shortLink" = ?</statement>
             <oraObjects/>
             <oraTables/>
             <QueryOutputCachedSchemaColumns>customLink</QueryOutputCachedSchemaColumns>
@@ -107,10 +108,24 @@ WHERE "customLink" = ?</statement>
                     <parameterName>customLink</parameterName>
                     <dataType>VARCHAR</dataType>
                 </parameter>
+                <parameter>
+                    <parameterName>customLink</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
             </Prepared_Param_DataType>
         </config>
         <pd:inputBindings>
             <jdbcQueryActivityInput>
+                <customLink>
+                    <xsl:choose>
+                        <xsl:when test="exists($Parse-JSON/ns:ActivityOutputClass/pfx:ShortLink/pfx:customLink)">
+                            <xsl:value-of select="$Parse-JSON/ns:ActivityOutputClass/pfx:ShortLink/pfx:customLink"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </customLink>
                 <customLink>
                     <xsl:choose>
                         <xsl:when test="exists($Parse-JSON/ns:ActivityOutputClass/pfx:ShortLink/pfx:customLink)">
