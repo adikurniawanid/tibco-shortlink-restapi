@@ -124,7 +124,13 @@ AND "deletedAt" IS NULL</statement>
                     <xsd:complexType>
                         <xsd:sequence>
                             <xsd:element name="message" type="xsd:string"/>
-                            <xsd:element name="originalLink" type="xsd:string"/>
+                            <xsd:element name="data">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="originalLink" type="xsd:string"/>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
                         </xsd:sequence>
                     </xsd:complexType>
                 </xsd:element>
@@ -136,9 +142,11 @@ AND "deletedAt" IS NULL</statement>
                     <message>
                         <xsl:value-of select="&quot;Redirect shortlink successfully&quot;"/>
                     </message>
-                    <originalLink>
-                        <xsl:value-of select="$Get-Original-UrL/resultSet/Record[1]/originalLink"/>
-                    </originalLink>
+                    <data>
+                        <originalLink>
+                            <xsl:value-of select="$Get-Original-UrL/resultSet/Record[1]/originalLink"/>
+                        </originalLink>
+                    </data>
                 </ResponseData>
             </ns:ActivityInputClass>
         </pd:inputBindings>
