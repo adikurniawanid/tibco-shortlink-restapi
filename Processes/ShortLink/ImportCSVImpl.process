@@ -130,7 +130,7 @@
                     <xsl:value-of select="concat(&quot;C:\Users\MIG12845\Documents\GitHub\tibco-shortlink-restapi\data\&quot;, $Parse-JSON/ns:ActivityOutputClass/fileNameCSV,&quot;.csv&quot;)"/>
                 </fileName>
                 <noOfRecords>
-                    <xsl:value-of select="4"/>
+                    <xsl:value-of select="-1"/>
                 </noOfRecords>
                 <SkipHeaderCharacters>
                     <xsl:value-of select="23"/>
@@ -159,8 +159,15 @@
         </pd:inputBindings>
     </pd:activity>
     <pd:transition>
-        <pd:from>Group</pd:from>
-        <pd:to>End</pd:to>
+        <pd:from>Start</pd:from>
+        <pd:to>Parse JSON</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Parse JSON</pd:from>
+        <pd:to>Parse Data</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -173,15 +180,8 @@
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>Start</pd:from>
-        <pd:to>Parse JSON</pd:to>
-        <pd:lineType>Default</pd:lineType>
-        <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
-    </pd:transition>
-    <pd:transition>
-        <pd:from>Parse JSON</pd:from>
-        <pd:to>Parse Data</pd:to>
+        <pd:from>Group</pd:from>
+        <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
